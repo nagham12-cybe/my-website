@@ -1,0 +1,824 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secret Message</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #fff8fb;
+      --ink-color: #161616;
+      --blue-underline: #7bb9e8;
+      --pink-highlight: #f39cc3;
+      --envelope-yellow: #fdfbb4;
+      --envelope-body: #fbfaf6;
+      --heart-pink: #f49ac2;
+      --btn-peach: #e49e77;
+      --btn-peach-hover: #dc8e63;
+      --footer-gray: #7b7779;
+
+      /* ألوان مستوحاة من القطة في الصورة بأسلوب كارتوني */
+      --cat-fur-light: #f3ece7;
+      --cat-fur-shade: #dfd3ca;
+      --cat-point-gray: #b8aba4;
+      --cat-eye-blue: #9ecae6;
+      --cat-nose-pink: #e9a3b0;
+      --cat-paw-pink: #f1c3cb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Architects Daughter', cursive;
+      color: var(--ink-color);
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    .speck {
+      position: absolute;
+      width: 3px;
+      height: 5px;
+      background-color: #d97a96;
+      border-radius: 50%;
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .headline {
+      font-size: clamp(1.6rem, 4.5vw, 2.15rem);
+      line-height: 1.55;
+      letter-spacing: 0.5px;
+      margin-bottom: 32px;
+      min-height: 105px;
+      cursor: default;
+    }
+
+    .line-anim-1 {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(16px) rotate(-1.5deg);
+      animation: lineEntrance 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                 livelyBob1 3.2s ease-in-out 0.75s infinite;
+    }
+
+    .line-anim-2 {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(16px) rotate(1.5deg);
+      animation: lineEntrance 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards,
+                 livelyBob2 3.5s ease-in-out 1s infinite;
+    }
+
+    .headline:hover .line-anim-1,
+    .headline:hover .line-anim-2 {
+      animation-play-state: paused;
+    }
+
+    .headline:hover .line-anim-1 {
+      transform: translateY(-4px) rotate(-2deg) scale(1.02);
+      transition: transform 0.25s ease;
+    }
+
+    .headline:hover .line-anim-2 {
+      transform: translateY(-4px) rotate(2deg) scale(1.02);
+      transition: transform 0.25s ease;
+    }
+
+    .underline-blue {
+      position: relative;
+      display: inline-block;
+    }
+
+    .underline-blue::after {
+      content: "";
+      position: absolute;
+      left: -2px;
+      right: -2px;
+      bottom: 2px;
+      height: 4px;
+      background-color: var(--blue-underline);
+      border-radius: 4px;
+      transform: rotate(-0.6deg);
+      animation: pulseLine 2.2s ease-in-out infinite;
+    }
+
+    .highlight-pink {
+      background-color: var(--pink-highlight);
+      color: #ffffff;
+      padding: 0px 9px 2px 9px;
+      border-radius: 2px;
+      display: inline-block;
+      transform: rotate(-1deg);
+      box-shadow: 0 2px 0 rgba(243, 156, 195, 0.35);
+      animation: wiggleOpen 2.1s ease-in-out infinite;
+    }
+
+    .envelope-wrapper {
+      width: 255px;
+      max-width: 78vw;
+      margin-bottom: 34px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: gentleFloat 3.8s ease-in-out infinite;
+    }
+
+    .envelope-wrapper:hover {
+      transform: scale(1.05) rotate(-1.5deg);
+    }
+
+    .envelope-svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.03));
+    }
+
+    .heart-beat {
+      transform-origin: 138px 76px;
+      animation: heartbeat 1.8s ease-in-out infinite;
+    }
+
+    .buttons-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      margin-bottom: 38px;
+      position: relative;
+      min-height: 56px;
+    }
+
+    .pill-btn {
+      font-family: 'Architects Daughter', cursive;
+      background-color: var(--btn-peach);
+      color: #ffffff;
+      border: 3.5px solid var(--ink-color);
+      border-radius: 999px;
+      width: 106px;
+      height: 50px;
+      font-size: 1.35rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 rgba(22, 22, 22, 0.12);
+      transition: transform 0.18s ease, background-color 0.2s ease;
+      position: relative;
+    }
+
+    .pill-btn.no-btn {
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+    }
+
+    .pill-btn:hover {
+      background-color: var(--btn-peach-hover);
+      transform: translateY(-3px) scale(1.04);
+    }
+
+    .pill-btn:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .footer-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--footer-gray);
+      letter-spacing: 0.2px;
+      opacity: 0.9;
+    }
+
+    /* طبقة شاشة الرسالة */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 240, 247, 0.82);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 20;
+      padding: 118px 20px 28px 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .balloons-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 21;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -110px;
+      width: var(--size, 42px);
+      height: calc(var(--size, 42px) * 1.22);
+      border-radius: 50% 50% 46% 46%;
+      background: var(--color);
+      border: 2.5px solid rgba(22, 22, 22, 0.45);
+      box-shadow: inset -6px -8px 12px rgba(0, 0, 0, 0.08),
+                  inset 5px 5px 10px rgba(255, 255, 255, 0.55);
+      opacity: 0;
+      transform: translateX(0) rotate(var(--tilt, 0deg));
+      animation: balloonRise var(--duration, 4.5s) cubic-bezier(0.25, 0.85, 0.35, 1) var(--delay, 0s) forwards;
+    }
+
+    .balloon::before {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 6px;
+      background: var(--color);
+      border: 2px solid rgba(22, 22, 22, 0.45);
+      border-radius: 2px;
+    }
+
+    .balloon::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1.5px;
+      height: 36px;
+      background: rgba(22, 22, 22, 0.25);
+    }
+
+    /* حاوية الكرت والقطة - أعرض من السابق */
+    .card-stage {
+      position: relative;
+      max-width: 560px;
+      width: 100%;
+      z-index: 25;
+      transform: scale(0.85) translateY(18px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .card-stage {
+      transform: scale(1) translateY(0);
+    }
+
+    /* القطة على الزاوية اليمين */
+    .cat-peeking-svg {
+      position: absolute;
+      top: -92px;
+      right: 22px;
+      width: 176px;
+      height: auto;
+      overflow: visible;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* بطاقة الرسالة */
+    .letter-card {
+      background: #fffdf7;
+      border: 3.5px solid var(--ink-color);
+      border-radius: 18px;
+      width: 100%;
+      padding: 32px 30px 28px 30px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 6px 6px 0 var(--pink-highlight);
+    }
+
+    /* الكفان المتدليان على الزاوية اليمنى فوق حافة الكرت */
+    .cat-front-paws-svg {
+      position: absolute;
+      top: -2px;
+      right: 22px;
+      width: 176px;
+      height: 120px;
+      overflow: visible;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .letter-card h2 {
+      font-size: 1.55rem;
+      margin-bottom: 14px;
+      color: var(--ink-color);
+    }
+
+    /* الحفاظ على ترتيب الأسطر والمسافات تماماً كما تكتبينها */
+    .letter-card p {
+  font-size: 1.15rem;
+  font-weight: 700; /* خط أغمق وأوضح */
+  line-height: 1.65;
+  color: #161616; /* لون أغمق قريب للأسود بدل الرمادي */
+  margin-bottom: 24px;
+  white-space: pre-line;
+  direction: ltr; /* اتجاه الكتابة من اليسار لليمين */
+  text-align: left; /* محاذاة الأسطر من اليسار */
+  user-select: text;
+}
+    }
+
+    .close-btn {
+      font-family: 'Architects Daughter', cursive;
+      background: var(--pink-highlight);
+      color: #fff;
+      border: 3px solid var(--ink-color);
+      border-radius: 999px;
+      padding: 6px 26px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* دورة 13 ثانية أبطأ وأنعم */
+    .cat-head-group {
+      transform-origin: 95px 62px;
+      animation: catHeadCycle 13s ease-in-out infinite;
+    }
+
+    .cat-eyes-group {
+      transform-origin: 95px 53px;
+      animation: catEyesCycle 13s ease-in-out infinite;
+    }
+
+    .cat-tongue {
+      transform-origin: 95px 69px;
+      animation: catTongueLick 13s ease-in-out infinite;
+    }
+
+    .cat-left-paw {
+      transform-origin: 68px 2px;
+      animation: leftPawHang 13s ease-in-out infinite;
+    }
+
+    .cat-right-paw {
+      transform-origin: 122px 2px;
+      animation: rightPawLickAndClean 13s ease-in-out infinite;
+    }
+
+    @keyframes catHeadCycle {
+      0%, 48% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      16% {
+        transform: translateY(2px) rotate(-2.5deg);
+      }
+      33% {
+        transform: translateY(1px) rotate(1.5deg);
+      }
+      55% {
+        transform: translateY(3px) rotate(-4deg);
+      }
+      64% {
+        transform: translateY(3px) rotate(-5deg);
+      }
+      74% {
+        transform: translateY(-2px) rotate(4deg);
+      }
+      84% {
+        transform: translateY(-1px) rotate(-3deg);
+      }
+      92% {
+        transform: translateY(1px) rotate(2deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+    }
+
+    @keyframes catEyesCycle {
+      0%, 49% {
+        transform: translate(-2px, 2px) scaleY(1);
+      }
+      22% {
+        transform: translate(-3.5px, 2px) scaleY(1);
+      }
+      38% {
+        transform: translate(-1px, 2.5px) scaleY(1);
+      }
+      53%, 91% {
+        transform: translate(0px, 1px) scaleY(0.18);
+      }
+      96%, 100% {
+        transform: translate(-2px, 2px) scaleY(1);
+      }
+    }
+
+    @keyframes catTongueLick {
+      0%, 51% {
+        opacity: 0;
+        transform: scaleY(0.2);
+      }
+      56%, 65% {
+        opacity: 1;
+        transform: scaleY(1.15);
+      }
+      69%, 100% {
+        opacity: 0;
+        transform: scaleY(0.2);
+      }
+    }
+
+    @keyframes leftPawHang {
+      0%, 49% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      56%, 91% {
+        transform: translateY(2px) rotate(-3deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+    }
+
+    @keyframes rightPawLickAndClean {
+      0%, 48% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+      56% {
+        transform: translate(-22px, -42px) rotate(32deg);
+      }
+      64% {
+        transform: translate(-20px, -40px) rotate(26deg);
+      }
+      72% {
+        transform: translate(-26px, -68px) rotate(48deg);
+      }
+      79% {
+        transform: translate(-18px, -55px) rotate(28deg);
+      }
+      86% {
+        transform: translate(-28px, -66px) rotate(44deg);
+      }
+      92% {
+        transform: translate(-20px, -46px) rotate(20deg);
+      }
+      96%, 100% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+    }
+
+    @keyframes lineEntrance {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes livelyBob1 {
+      0%, 100% { transform: translateY(0px) rotate(-0.8deg); }
+      50% { transform: translateY(-5px) rotate(1.2deg); }
+    }
+
+    @keyframes livelyBob2 {
+      0%, 100% { transform: translateY(0px) rotate(0.8deg); }
+      50% { transform: translateY(-5px) rotate(-1.2deg); }
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(0.8deg); }
+    }
+
+    @keyframes wiggleOpen {
+      0%, 100% { transform: rotate(-1deg) scale(1); }
+      50% { transform: rotate(2.5deg) scale(1.07); }
+    }
+
+    @keyframes pulseLine {
+      0%, 100% { transform: scaleX(1) rotate(-0.6deg); }
+      50% { transform: scaleX(1.06) rotate(0.8deg); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.14); }
+      45% { transform: scale(0.98); }
+      65% { transform: scale(1.1); }
+    }
+
+    @keyframes shakeNo {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-4deg); }
+      40% { transform: translateX(8px) rotate(4deg); }
+      60% { transform: translateX(-6px) rotate(-2deg); }
+      80% { transform: translateX(6px) rotate(2deg); }
+    }
+
+    @keyframes balloonRise {
+      0% {
+        bottom: -110px;
+        opacity: 0;
+        transform: translateX(0px) rotate(var(--tilt, 0deg)) scale(0.9);
+      }
+      12% {
+        opacity: 0.78;
+      }
+      50% {
+        opacity: 0.72;
+        transform: translateX(var(--sway, 18px)) rotate(calc(var(--tilt, 0deg) * -1)) scale(1);
+      }
+      85% {
+        opacity: 0.35;
+      }
+      100% {
+        bottom: 112vh;
+        opacity: 0;
+        transform: translateX(calc(var(--sway, 18px) * -0.6)) rotate(var(--tilt, 0deg)) scale(0.95);
+      }
+    }
+
+    .shake {
+      animation: shakeNo 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <span class="speck" style="top: 10%; left: 32%;"></span>
+  <span class="speck" style="top: 37%; left: 20.5%;"></span>
+  <span class="speck" style="bottom: 1.5%; left: 22%;"></span>
+
+  <main class="container">
+    <h1 class="headline" id="headline">
+      <span class="line-anim-1">Hey! You got a <span class="underline-blue">secret</span></span><br />
+      <span class="line-anim-2"><span class="underline-blue">message.</span> Want to <span class="highlight-pink">open</span> it?</span>
+    </h1>
+
+    <div class="envelope-wrapper" id="envelopeBox" title="Click to open!">
+      <svg class="envelope-svg" viewBox="0 0 280 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 14 C 95 15, 185 13, 263 14 C 264 68, 267 122, 269 167 C 185 170, 96 172, 18 171 C 17 118, 16 65, 16 14 Z"
+              fill="#fbfaf6" stroke="#161616" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <path d="M17 15 C 98 15, 182 14, 262 15 C 222 48, 178 79, 138 103 C 96 77, 54 46, 17 15 Z"
+              fill="#fdfbb4" stroke="#161616" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <g class="heart-beat">
+          <path d="M138 71 C 134 64, 124 66, 126 74 C 128 80, 136 85, 139 88 C 143 84, 151 77, 152 71 C 153 64, 143 63, 138 71 Z"
+                fill="#f49ac2" stroke="#161616" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+
+        <g transform="rotate(-14 145 142)" stroke="#161616" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M84 152 L85 129 L96 143 L107 129 L109 152" />
+          <path d="M126 152 L134 128 L145 152 M129 144 L141 143" />
+          <path d="M164 129 L165 152" />
+          <path d="M187 128 L187 151 L206 151" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="buttons-row" id="buttonsRow">
+      <button class="pill-btn yes-btn" id="yesBtn">Yes</button>
+      <button class="pill-btn no-btn" id="noBtn">NO</button>
+    </div>
+
+    <div class="footer-note">( Made by the best girl (me) )</div>
+  </main>
+
+  <div class="modal-overlay" id="secretModal">
+    <div class="balloons-layer" id="balloonsLayer"></div>
+
+    <div class="card-stage">
+      <!-- القطة على الزاوية اليمين -->
+      <svg class="cat-peeking-svg" viewBox="0 0 190 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M52 104 C 52 82, 70 74, 95 74 C 120 74, 138 82, 138 104 Z"
+              fill="var(--cat-fur-light)" stroke="var(--ink-color)" stroke-width="3.2" stroke-linejoin="round"/>
+        <ellipse cx="95" cy="87" rx="14" ry="8" fill="#ffffff" opacity="0.7"/>
+
+        <g class="cat-head-group">
+          <path d="M56 36 L48 12 L72 25 Z"
+                fill="var(--cat-point-gray)" stroke="var(--ink-color)" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M134 36 L142 12 L118 25 Z"
+                fill="var(--cat-point-gray)" stroke="var(--ink-color)" stroke-width="3" stroke-linejoin="round"/>
+
+          <path d="M50 56 C 50 30, 71 21, 95 21 C 119 21, 140 30, 140 56 C 140 73, 121 80, 95 80 C 69 80, 50 73, 50 56 Z"
+                fill="var(--cat-fur-light)" stroke="var(--ink-color)" stroke-width="3.2" stroke-linejoin="round"/>
+
+          <ellipse cx="66" cy="58" rx="9" ry="6" fill="var(--cat-fur-shade)" opacity="0.55"/>
+          <ellipse cx="124" cy="58" rx="9" ry="6" fill="var(--cat-fur-shade)" opacity="0.55"/>
+
+          <g class="cat-eyes-group">
+            <circle cx="78" cy="51" r="8" fill="var(--cat-eye-blue)" stroke="var(--ink-color)" stroke-width="2.5"/>
+            <circle cx="78" cy="51" r="4" fill="var(--ink-color)"/>
+            <circle cx="76" cy="49" r="1.6" fill="#ffffff"/>
+
+            <circle cx="112" cy="51" r="8" fill="var(--cat-eye-blue)" stroke="var(--ink-color)" stroke-width="2.5"/>
+            <circle cx="112" cy="51" r="4" fill="var(--ink-color)"/>
+            <circle cx="110" cy="49" r="1.6" fill="#ffffff"/>
+          </g>
+
+          <path class="cat-tongue"
+                d="M91 67 C 91 75, 99 75, 99 67 Z"
+                fill="#ff8fab" stroke="var(--ink-color)" stroke-width="2" stroke-linejoin="round"/>
+
+          <path d="M91 59 L99 59 L95 64 Z"
+                fill="var(--cat-nose-pink)" stroke="var(--ink-color)" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M95 64 C 92 68, 87 68, 85 65"
+                stroke="var(--ink-color)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <path d="M95 64 C 98 68, 103 68, 105 65"
+                stroke="var(--ink-color)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+
+          <g stroke="#ffffff" stroke-width="2.2" stroke-linecap="round">
+            <line x1="60" y1="59" x2="24" y2="55"/>
+            <line x1="60" y1="65" x2="28" y2="67"/>
+            <line x1="130" y1="59" x2="166" y2="55"/>
+            <line x1="130" y1="65" x2="162" y2="67"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- بطاقة الرسالة -->
+      <div class="letter-card">
+        <h2>💌 Secret Message</h2>
+        <p id="secretText" dir="ltr">Heyyy
+            HAPPY BIRTHDAY TO U !!! 
+            ​May this new year hold u softly, be filled with love and happy moments,
+            and remind u again and again that u are worthy of every single one of them.
+            i'm kinda dumb and I don't always have the right words to say.
+            I just want u to know how grateful I am to have u. 
+            I may not tell u every day that u mean the world to me,
+            but u really do.
+            ​Happy birthday once again my babyyyy
+            I love u and I promise to love u unconditionally, to laugh with u when you're happy,
+            support u when you're sad, and celebrate u for so many more birthdays to come </p>
+        <button class="close-btn" id="closeModalBtn">Close</button>
+      </div>
+
+      <!-- يدا القطة المتدليتان على الزاوية اليمنى من الكرت -->
+      <svg class="cat-front-paws-svg" viewBox="0 0 190 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="cat-left-paw">
+          <path d="M60 2 C 58 18, 58 34, 68 36 C 78 37, 79 18, 77 2 Z"
+                fill="var(--cat-fur-light)" stroke="var(--ink-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="68" cy="29" rx="4.5" ry="3.5" fill="var(--cat-paw-pink)"/>
+        </g>
+
+        <g class="cat-right-paw">
+          <path d="M113 2 C 111 18, 112 37, 122 36 C 132 34, 132 18, 130 2 Z"
+                fill="var(--cat-fur-light)" stroke="var(--ink-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="122" cy="29" rx="4.5" ry="3.5" fill="var(--cat-paw-pink)"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const envelopeBox = document.getElementById('envelopeBox');
+    const secretModal = document.getElementById('secretModal');
+    const balloonsLayer = document.getElementById('balloonsLayer');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    let noClickCount = 0;
+    let balloonInterval = null;
+
+    const noMessages = [
+      "NO",
+      "Sure?",
+      "Really?",
+      "Try Yes!",
+      "Nope :P"
+    ];
+
+    const balloonColors = [
+      "#ff8fab",
+      "#ffd166",
+      "#7bb9e8",
+      "#b8f2e6",
+      "#cdb4db",
+      "#ffafcc",
+      "#a0c4ff",
+      "#ffc6ff"
+    ];
+
+    function spawnBalloon() {
+      if (!secretModal.classList.contains('active')) return;
+
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+
+      const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+      const size = Math.floor(Math.random() * 22) + 34;
+      const leftPos = Math.floor(Math.random() * 92) + 2;
+      const duration = (Math.random() * 2.2 + 3.6).toFixed(2) + 's';
+      const delay = (Math.random() * 0.25).toFixed(2) + 's';
+      const sway = (Math.floor(Math.random() * 44) - 22) + 'px';
+      const tilt = (Math.floor(Math.random() * 14) - 7) + 'deg';
+
+      balloon.style.setProperty('--color', color);
+      balloon.style.setProperty('--size', size + 'px');
+      balloon.style.left = leftPos + '%';
+      balloon.style.setProperty('--duration', duration);
+      balloon.style.setProperty('--delay', delay);
+      balloon.style.setProperty('--sway', sway);
+      balloon.style.setProperty('--tilt', tilt);
+
+      balloonsLayer.appendChild(balloon);
+
+      setTimeout(() => {
+        balloon.remove();
+      }, (parseFloat(duration) + parseFloat(delay) + 0.2) * 1000);
+    }
+
+    function startBalloonsShow() {
+      balloonsLayer.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        setTimeout(spawnBalloon, i * 140);
+      }
+      clearInterval(balloonInterval);
+      balloonInterval = setInterval(spawnBalloon, 320);
+    }
+
+    function stopBalloonsShow() {
+      clearInterval(balloonInterval);
+      balloonInterval = null;
+      balloonsLayer.innerHTML = '';
+    }
+
+    function openSecretMessage() {
+      secretModal.classList.add('active');
+      startBalloonsShow();
+    }
+
+    function closeSecretMessage() {
+      secretModal.classList.remove('active');
+      stopBalloonsShow();
+    }
+
+    yesBtn.addEventListener('click', openSecretMessage);
+    envelopeBox.addEventListener('click', openSecretMessage);
+    closeModalBtn.addEventListener('click', closeSecretMessage);
+
+    secretModal.addEventListener('click', (e) => {
+      if (e.target === secretModal) {
+        closeSecretMessage();
+      }
+    });
+
+    function dodgeNoButton() {
+      noClickCount++;
+      noBtn.classList.remove('shake');
+      void noBtn.offsetWidth;
+      noBtn.classList.add('shake');
+
+      noBtn.textContent = noMessages[noClickCount % noMessages.length];
+
+      const maxX = 95;
+      const maxY = 55;
+      const randomX = Math.floor(Math.random() * (maxX * 2 + 1)) - maxX;
+      const randomY = Math.floor(Math.random() * (maxY * 2 + 1)) - maxY;
+
+      noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+
+      const scale = Math.min(1 + noClickCount * 0.08, 1.45);
+      yesBtn.style.transform = `scale(${scale})`;
+    }
+
+    noBtn.addEventListener('click', dodgeNoButton);
+    noBtn.addEventListener('mouseenter', () => {
+      if (noClickCount > 0) dodgeNoButton();
+    });
+  </script>
+</body>
+</html>
